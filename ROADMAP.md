@@ -1,6 +1,6 @@
 # Roadmap — app-stack-template
 
-> Última actualización: 2026-04-20 · Commit: f00ee35 (sin cambios; post-Fase 3 en pollyflip) · CI: green
+> Última actualización: 2026-04-20 · Commit: pendiente (fix/phase3-findings branch) · CI: green
 
 Fuente de verdad del estado del template. Se actualiza al cierre de cada sesión.
 
@@ -51,11 +51,12 @@ Commit: `31dcf0e` · PR: https://github.com/oscarsovino/pollyflip/pull/1
 
 ## TODOs técnicos
 
-### Alta prioridad (descubiertos en Fase 3)
-- [ ] **`.npmrc` con `node-linker=hoisted`** en el root del template. El isolated linker + `disableHierarchicalLookup=true` de Metro rompe la resolución de transitivos RN (`hoist-non-react-statics`, `expo-modules-core`). Solución aplicada en pollyflip; propagar aquí.
-- [ ] **`apps/mobile/package.json`** debe incluir `hoist-non-react-statics` como dep directa (peer de `react-native-gesture-handler` que no resuelve sin hoist). Tenerlo declarado evita sorpresas incluso con linker hoisted.
-- [ ] **Decidir nav library por defecto**: el stack dice React Navigation v7, pero la mayoría de proyectos existentes (pollyflip MVP) empiezan con expo-router. Documentar en SPEC.md por qué RN Nav y ofrecer una guía de migración.
-- [ ] **`reactCompiler` experiment**: si se incluye, también hay que declarar `react-compiler-runtime` o documentar que queda desactivado hasta SDK con runtime incluido.
+### Alta prioridad
+- [x] ~~`.npmrc` con `node-linker=hoisted`~~ (aplicado; `init-app-stack.sh` ahora lo copia a targets)
+- [x] ~~`hoist-non-react-statics` como dep directa en `apps/mobile`~~
+- [x] ~~Decidir nav library por defecto + guía migración~~ → SPEC.md §11.1–11.2; reglas 13 y 15 en SPEC/bloque CLAUDE
+- [x] ~~`reactCompiler` guard~~ → SPEC.md §11.3; regla 14/16 en SPEC/bloque CLAUDE
+- [x] ~~`babel-preset-expo` version mismatch~~ (`~13.0.0` → `~54.0.10`, alineado con SDK 54; SPEC §11.4)
 - [ ] **ESLint config** para ambos apps. `apps/web`: flat config Next 16 + `@eslint/eslintrc`. `apps/mobile`: `.eslintrc.js` extendiendo `eslint-config-expo`. Luego reintegrar `lint` al CI: `turbo run typecheck lint test`.
 - [ ] **Script `gen-css-vars`** en `apps/web` que use `toCssVariables()` de `@app-stack/shared-tokens` para generar el bloque de `globals.css` (hoy están duplicados a mano).
 - [ ] **Script `pnpm gen:types`** en root: corre `supabase gen typescript` contra el proyecto y escribe `packages/shared-types/src/database.ts`.
@@ -70,19 +71,20 @@ Commit: `31dcf0e` · PR: https://github.com/oscarsovino/pollyflip/pull/1
 - [ ] Preset `monorepo-consumer` si aparecen 3+ apps tourist-style con mismas convenciones (bottom nav, theming, PWA).
 - [ ] Evaluar `@app-stack/shared-services` (hooks reusables como `useProfile`, `useAuth`) tras 2-3 migraciones. Solo si el patrón emerge orgánicamente.
 
-## Playbook próxima sesión — arreglar TODOs alta prioridad del template
+## Playbook próxima sesión — iniciar Fase 4
 
-Antes de abordar Fase 4 (BRN, miAcademia, alDia2.0), estabilizar el template con los fixes descubiertos en Fase 3:
+Template estable con fixes Fase 3 aplicados. Siguiente migración:
 
 ```bash
 cd /home/pc/projects/app-stack-template
 git pull --ff-only
 
-# 1. Añadir .npmrc con node-linker=hoisted
-# 2. Declarar hoist-non-react-statics en apps/mobile/package.json
-# 3. Decidir y documentar nav library en SPEC.md
-# 4. Verificar reactCompiler o removerlo del scaffold mobile
-# 5. Commit + push; luego Fase 4 migra apoyándose en un template estable
+# 1. Elegir primer proyecto de Fase 4 (propuesta: BRN por peso; o alDia2.0 por ser ya monorepo)
+# 2. Crear worktree feat/app-stack-migration en el proyecto elegido
+# 3. bash init-app-stack.sh <worktree> --preset=both  (rehecha: .npmrc + deps ya correctas)
+# 4. Migrar código; si viene de expo-router, seguir SPEC.md §11.2
+# 5. pnpm turbo run typecheck → verde con strictness completa
+# 6. PR + smoke test (iOS + Android bundles)
 ```
 
 ## Dónde vive el estado

@@ -19,6 +19,7 @@ This template follows the **L1+ shared-logic pattern**: share non-UI concerns, l
 - **Build orchestration:** Turborepo 2
 - **TypeScript:** 5.x strict across all packages/apps
 - **Node:** 20.x LTS
+- **Install strategy:** root `.npmrc` sets `node-linker=hoisted`. React Native requires this: Metro cannot resolve transitive deps of `expo`, `react-native-gesture-handler`, etc. under pnpm's isolated layout without it. Symptom when missing: `Unable to resolve module X` during `expo start` / `expo export` mid-bundle.
 
 ### 2.2 Web (`apps/web`)
 
@@ -35,7 +36,7 @@ This template follows the **L1+ shared-logic pattern**: share non-UI concerns, l
 
 - Expo SDK 54 + React Native 0.81
 - Ignite by Infinite Red (folder conventions: `app/{components,config,hooks,i18n,models,navigators,screens,services,theme,utils}`)
-- React Navigation v7 (native-stack + bottom-tabs)
+- **React Navigation v7** (native-stack + bottom-tabs) — **NOT expo-router**. See §11 for rationale and migration guidance.
 - TanStack Query v5
 - **Zustand v5** — NO MST in new projects
 - React Hook Form v7 + Zod v4
@@ -148,6 +149,8 @@ Platforms have genuinely different idioms: tap targets, bottom sheets, haptics o
 10. **Supabase types are regenerated**, never hand-edited.
 11. **i18n placeholders use `{{var}}`** (i18next native). No ICU.
 12. **No FK JOINs to `auth.users`.** Use separate queries to `public.users` or `profiles`.
+13. **Mobile navigation is React Navigation v7.** Do not introduce or preserve `expo-router` in `apps/mobile`. When importing a project that uses expo-router, rewrite during migration (see §11.2).
+14. **Do not enable `reactCompiler` experiment** in `app.config.ts` / `app.json` without first adding `react-compiler-runtime` as a direct dep. Expo SDK 54 does not bundle the runtime, so bundling fails otherwise.
 
 ## 7. Testing
 
@@ -188,3 +191,48 @@ app-stack-template/
 
 - Template SemVer: breaking = Major, additive = Minor, fixes = Patch.
 - `app-stack-claude.md` block is updated via `init-app-stack.sh` in merge mode (marker-driven). Content outside markers is never touched.
+
+## 11. Known constraints and migration notes
+
+Surfaced during the Phase 3 pilot (PollyFlip → monorepo). Recording here so future migrations skip the landmines.
+
+### 11.1 Mobile navigation: React Navigation, not expo-router
+
+Section 3 rules out **universal** expo-router (L3, web+mobile). This template additionally rules out **mobile-only** expo-router in favor of React Navigation v7. Rationale:
+
+- Typed route params via `RootStackParamList` + `NativeStackScreenProps<...>` is strictly checked at compile time. expo-router's `typedRoutes` experiment is opt-in, requires an extra build step, and only validates href literals.
+- Ignite conventions (`app/screens/*.tsx` + `app/navigators/*.tsx`) compose naturally with React Navigation. expo-router's file-based routing fights the Ignite structure.
+- Every mobile app in this org starts mobile-only. Expo Router's value proposition is SSR + web + deep-link symmetry — none of which we need in `apps/mobile` (web lives in `apps/web` with Next.js).
+- One mental model across the stack: `navigation.navigate(...)` + `route.params` resembles Next.js's `router.push(...)` + `useSearchParams()` enough that devs crossing between apps ramp up fast.
+
+### 11.2 Migration guide: expo-router → React Navigation v7
+
+When migrating an app that uses expo-router (file-based routing):
+
+1. **Delete `app/_layout.tsx`, `app/index.tsx`, dynamic route dirs** (`app/[id].tsx`, `app/foo/[id].tsx`, etc.).
+2. **Move screens** to `app/screens/<Name>Screen.tsx`. Rename default exports (`HomeScreen`, `DeckScreen`, …).
+3. **Create `app/navigators/RootNavigator.tsx`** with `createNativeStackNavigator<RootStackParamList>()` where `RootStackParamList` declares every screen's params (`{ id: string }`, etc.). Export both the component and the ParamList type.
+4. **Declare the ParamList globally** so every `useNavigation()` call gets typed:
+   ```ts
+   declare global {
+     namespace ReactNavigation {
+       interface RootParamList extends RootStackParamList {}
+     }
+   }
+   ```
+5. **Entrypoint:** `apps/mobile/index.tsx` calls `registerRootComponent(App)` where `App` wraps `RootNavigator` in `NavigationContainer` + any providers (gesture handler, safe area, fonts).
+6. **Rewrite call sites:**
+   - `router.push('/home')` → `navigation.navigate('Home')`
+   - `router.replace('/deck/42')` → `navigation.replace('Deck', { id: '42' })`
+   - `router.back()` → `navigation.goBack()`
+   - `useLocalSearchParams<{ id: string }>()` → component receives `route: RouteProp<RootStackParamList, 'Deck'>`, read via `route.params.id`.
+7. **Remove from `package.json`:** `expo-router`. **Change:** `"main"` from `"expo-router/entry"` to `"index.tsx"`.
+8. **Remove from `app.json`/`app.config.ts`:** the `"expo-router"` plugin entry; the `experiments.typedRoutes` flag (expo-router-specific).
+
+### 11.3 `reactCompiler` experiment is off by default
+
+Enabling `experiments.reactCompiler = true` in Expo SDK 54 requires `react-compiler-runtime` as a direct dep. The SDK does not bundle it. Bundling without the runtime fails with `Unable to resolve module react-compiler-runtime`. Leave the experiment off unless the runtime is explicitly added.
+
+### 11.4 `babel-preset-expo` version tracks SDK version
+
+For Expo SDK 54, `babel-preset-expo` must be `~54.x`, not `^13.x`. The major versions look unrelated (SDK 49 used babel-preset-expo v10, SDK 50+ realigned to match). Expo CLI prints a warning on mismatch; bundling may still work but is unsupported.
