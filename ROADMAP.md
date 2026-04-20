@@ -1,6 +1,6 @@
 # Roadmap — app-stack-template
 
-> Última actualización: 2026-04-20 · Commit: pendiente (fix/phase3-findings branch) · CI: green
+> Última actualización: 2026-04-20 · Commit: 93e2a14 (PR #1 mergeado) · CI: green
 
 Fuente de verdad del estado del template. Se actualiza al cierre de cada sesión.
 
