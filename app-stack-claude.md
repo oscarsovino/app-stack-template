@@ -32,6 +32,22 @@ Expo SDK 54 · React Native 0.81 · Ignite (Infinite Red) · React Navigation v7
 - `@app-stack/shared-supabase` — platform-agnostic client factory + services
 - `@app-stack/shared-config` — tsconfig bases, eslint presets
 
+### Session protocol (app-stack)
+
+**Pre-sesión:**
+- `git pull --ff-only` (skip si read-only)
+- Si `pnpm-lock.yaml` cambió desde la última vez → `pnpm install`
+- Si no existe `node_modules/` en root → `pnpm install`
+
+**Antes de entregar / PR:**
+- `pnpm turbo run typecheck` verde en todo el monorepo
+- `pnpm turbo run lint` verde
+- Si tocaste `packages/shared-*`: verificar que NO importa `next` ni `react-native`
+
+**Post-sesión (adicional al global de AI Factory v2):**
+- Si se regeneraron types Supabase (`pnpm gen:types`), commitearlos
+- Si `pnpm-lock.yaml` cambió, commitearlo con el resto
+
 ### Rules for AI Agents
 
 1. **No UI components in `packages/*`.** shadcn lives in web, Ignite components live in mobile, both aligned to `shared-tokens`.
