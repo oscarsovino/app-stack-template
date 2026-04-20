@@ -12,9 +12,11 @@ export const colors = {
   destructiveForeground: "#ffffff",
   success: "#16a34a",
   warning: "#d97706",
-} as const
+}
 
-export const colorsDark: typeof colors = {
+export type ColorPalette = typeof colors
+
+export const colorsDark: ColorPalette = {
   primary: "#3b82f6",
   primaryForeground: "#ffffff",
   secondary: "#94a3b8",
