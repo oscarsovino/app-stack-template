@@ -71,7 +71,7 @@ copy_dir() {
 # --- 1. Root config --------------------------------------------------------
 
 echo "-> root config"
-for f in package.json pnpm-workspace.yaml turbo.json .nvmrc .gitignore prettier.config.mjs; do
+for f in package.json pnpm-workspace.yaml turbo.json .nvmrc .npmrc .gitignore prettier.config.mjs; do
   if [[ -f "$SCRIPT_DIR/$f" ]]; then
     copy_file "$SCRIPT_DIR/$f" "$TARGET_ABS/$f"
   fi
