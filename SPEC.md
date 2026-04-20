@@ -178,10 +178,10 @@ app-stack-template/
     shared-i18n/
     shared-tokens/
     shared-supabase/
-  apps/                     (Phase 2)
-    web/
-    mobile/
-  supabase/                 (Phase 2 — shared migrations)
+  apps/
+    web/                    (Next.js 16 + shadcn + Tailwind v4)
+    mobile/                 (Expo 54 + Ignite conventions + Zustand)
+  supabase/                 (shared migrations — populated per project)
 ```
 
 ## 10. Versioning

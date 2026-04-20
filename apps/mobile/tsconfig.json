@@ -1,0 +1,14 @@
+{
+  "extends": "../../packages/shared-config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "noEmit": true,
+    "allowJs": true,
+    "types": ["jest", "node"],
+    "paths": {
+      "@/*": ["./app/*"]
+    }
+  },
+  "include": ["app/**/*", "index.tsx", "app.config.ts"],
+  "exclude": ["node_modules", ".expo", "dist"]
+}
