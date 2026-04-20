@@ -53,9 +53,9 @@ pnpm install
 
 ## Status
 
-**Phase 2 (current):** packages/shared-* + apps/web + apps/mobile + init script. Working monorepo skeleton.
+See **[ROADMAP.md](./ROADMAP.md)** for phase status, open TODOs, and the next-session playbook.
 
-**Phase 3 (next):** pilot on PollyFlip, then migrate BRN and miAcademia into monorepo.
+Short version: Phases 1 + 2 done, template validated (pnpm install + typecheck green in CI). Next: Phase 3 pilot on PollyFlip.
 
 ## License
 
