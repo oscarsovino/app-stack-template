@@ -21,5 +21,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck · Lint · Test
-        run: pnpm turbo run typecheck lint test
+      # Lint is intentionally excluded until Phase 3: apps/web needs an
+      # ESLint 9 flat config wired to Next 16, and apps/mobile needs
+      # .eslintrc.js with eslint-config-expo. Both arrive once real code
+      # lands during project migrations.
+      - name: Typecheck · Test
+        run: pnpm turbo run typecheck test
