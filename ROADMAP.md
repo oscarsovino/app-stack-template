@@ -1,6 +1,6 @@
 # Roadmap — app-stack-template
 
-> Última actualización: 2026-04-19 · Commit: f00ee35 · CI: green
+> Última actualización: 2026-04-20 · Commit: f00ee35 (sin cambios; post-Fase 3 en pollyflip) · CI: green
 
 Fuente de verdad del estado del template. Se actualiza al cierre de cada sesión.
 
@@ -32,13 +32,17 @@ Commits: `e6bc863` → `b1d6f63` → `db7d97d` → `f00ee35`
 - `next lint` removido en Next 16 → `eslint .` directo (pero desactivado en CI, ver TODO)
 - `vitest run --passWithNoTests` + `jest --passWithNoTests` para tolerar ausencia de tests
 
-### Fase 3 — Piloto en PollyFlip ⏳ siguiente
-- Worktree `feat/app-stack-migration` en PollyFlip
-- Migrar código actual de PollyFlip a `apps/mobile/`
-- Sembrar `packages/*` + `apps/web/` vacío vía `init-app-stack.sh`
-- Ajustar imports de PollyFlip a `@app-stack/shared-*`
-- `pnpm install` + `turbo run typecheck` hasta verde
-- PR a `main` de PollyFlip
+### Fase 3 — Piloto en PollyFlip ✅
+Commit: `31dcf0e` · PR: https://github.com/oscarsovino/pollyflip/pull/1
+
+- Worktree `feat/app-stack-migration` en PollyFlip + `origin` configurado (GitHub `oscarsovino/pollyflip`, privado)
+- Código de PollyFlip reubicado bajo `apps/mobile/app/{components,constants,screens,navigators}`
+- **expo-router → React Navigation v7** (native-stack) — el template prescribe RN Nav. `RootStackParamList` tipado; todos los `router.*` reescritos a `navigation.*` + `route.params`
+- Nuevo entrypoint `apps/mobile/index.tsx` + `app/app.tsx` (`registerRootComponent`)
+- `main: "index.tsx"`, sin `expo-router`, con `@react-navigation/native-stack` añadido
+- Strictness del monorepo respetada (`noUncheckedIndexedAccess: true`): helper `firstDeck()` con tuple no-vacía en lugar de fallbacks inseguros
+- `turbo run typecheck`: **8/8 verde** sin overrides locales
+- Smoke test: iOS + Android bundles generados (3.6 MB hbc)
 
 ### Fase 4 — Migraciones adicionales (pendiente)
 - **BRN** → monorepo (conservar deps específicas: `@maplibre/maplibre-react-native`, offline queue, expo-audio)
@@ -47,7 +51,11 @@ Commits: `e6bc863` → `b1d6f63` → `db7d97d` → `f00ee35`
 
 ## TODOs técnicos
 
-### Alta prioridad
+### Alta prioridad (descubiertos en Fase 3)
+- [ ] **`.npmrc` con `node-linker=hoisted`** en el root del template. El isolated linker + `disableHierarchicalLookup=true` de Metro rompe la resolución de transitivos RN (`hoist-non-react-statics`, `expo-modules-core`). Solución aplicada en pollyflip; propagar aquí.
+- [ ] **`apps/mobile/package.json`** debe incluir `hoist-non-react-statics` como dep directa (peer de `react-native-gesture-handler` que no resuelve sin hoist). Tenerlo declarado evita sorpresas incluso con linker hoisted.
+- [ ] **Decidir nav library por defecto**: el stack dice React Navigation v7, pero la mayoría de proyectos existentes (pollyflip MVP) empiezan con expo-router. Documentar en SPEC.md por qué RN Nav y ofrecer una guía de migración.
+- [ ] **`reactCompiler` experiment**: si se incluye, también hay que declarar `react-compiler-runtime` o documentar que queda desactivado hasta SDK con runtime incluido.
 - [ ] **ESLint config** para ambos apps. `apps/web`: flat config Next 16 + `@eslint/eslintrc`. `apps/mobile`: `.eslintrc.js` extendiendo `eslint-config-expo`. Luego reintegrar `lint` al CI: `turbo run typecheck lint test`.
 - [ ] **Script `gen-css-vars`** en `apps/web` que use `toCssVariables()` de `@app-stack/shared-tokens` para generar el bloque de `globals.css` (hoy están duplicados a mano).
 - [ ] **Script `pnpm gen:types`** en root: corre `supabase gen typescript` contra el proyecto y escribe `packages/shared-types/src/database.ts`.
@@ -62,29 +70,19 @@ Commits: `e6bc863` → `b1d6f63` → `db7d97d` → `f00ee35`
 - [ ] Preset `monorepo-consumer` si aparecen 3+ apps tourist-style con mismas convenciones (bottom nav, theming, PWA).
 - [ ] Evaluar `@app-stack/shared-services` (hooks reusables como `useProfile`, `useAuth`) tras 2-3 migraciones. Solo si el patrón emerge orgánicamente.
 
-## Playbook próxima sesión — Fase 3 (PollyFlip)
+## Playbook próxima sesión — arreglar TODOs alta prioridad del template
+
+Antes de abordar Fase 4 (BRN, miAcademia, alDia2.0), estabilizar el template con los fixes descubiertos en Fase 3:
 
 ```bash
-# 1. Contexto
 cd /home/pc/projects/app-stack-template
 git pull --ff-only
-cat ROADMAP.md
 
-# 2. Worktree en proyecto piloto (PollyFlip)
-cd /home/pc/projects/pollyflip
-git pull --ff-only
-git worktree add /home/pc/projects/brn-pollyflip-monorepo -b feat/app-stack-migration
-
-# 3. Sembrar template dentro del worktree
-bash /home/pc/projects/app-stack-template/init-app-stack.sh \
-  /home/pc/projects/brn-pollyflip-monorepo \
-  --preset=both --install
-
-# 4. Migrar código de PollyFlip (app/, screens/, etc.) al nuevo apps/mobile/
-# 5. Ajustar imports que apuntaban a paths locales → @app-stack/shared-*
-# 6. pnpm turbo run typecheck  (iterar hasta verde)
-# 7. pnpm -F @app-stack/mobile start  (validación manual app en Expo Go)
-# 8. git commit + push + PR a main de PollyFlip
+# 1. Añadir .npmrc con node-linker=hoisted
+# 2. Declarar hoist-non-react-statics en apps/mobile/package.json
+# 3. Decidir y documentar nav library en SPEC.md
+# 4. Verificar reactCompiler o removerlo del scaffold mobile
+# 5. Commit + push; luego Fase 4 migra apoyándose en un template estable
 ```
 
 ## Dónde vive el estado
