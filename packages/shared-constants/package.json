@@ -1,0 +1,15 @@
+{
+  "name": "@app-stack/shared-constants",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Enums, regex, limits, and domain constants.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

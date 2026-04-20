@@ -1,0 +1,15 @@
+{
+  "name": "@app-stack/shared-tokens",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Design tokens (colors, spacing, typography) + CSS variable generator.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

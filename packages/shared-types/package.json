@@ -1,0 +1,15 @@
+{
+  "name": "@app-stack/shared-types",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Generated Supabase types + domain type aliases.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+.expo/
+.expo-shared/
+web-build/
+*.tsbuildinfo
+.turbo/
+
+# Testing
+coverage/
+*.lcov
+playwright-report/
+test-results/
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Native (mobile)
+ios/Pods/
+android/.gradle/
+android/build/
+android/app/build/
+*.keystore
+!debug.keystore

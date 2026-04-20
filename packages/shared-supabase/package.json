@@ -1,0 +1,22 @@
+{
+  "name": "@app-stack/shared-supabase",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Platform-agnostic Supabase client factory and service layer.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@app-stack/shared-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.84.0",
+    "typescript": "*"
+  }
+}

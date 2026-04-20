@@ -1,0 +1,11 @@
+{
+  "name": "@app-stack/shared-config",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared dev config: tsconfig bases, eslint presets (Phase 2).",
+  "sideEffects": false,
+  "files": ["tsconfig.base.json"],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  }
+}
