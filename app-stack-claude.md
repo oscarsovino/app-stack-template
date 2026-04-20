@@ -50,6 +50,7 @@ Expo SDK 54 · React Native 0.81 · Ignite (Infinite Red) · React Navigation v7
 14. **No FK JOINs to `auth.users`.** Use `public.users` or `profiles`.
 15. **Mobile nav is React Navigation v7.** Do not use or preserve `expo-router` in `apps/mobile`. Projects migrating from expo-router must rewrite call sites (see SPEC §11.2).
 16. **`reactCompiler` experiment stays off** unless `react-compiler-runtime` is added as a direct dep. Expo SDK 54 does not bundle it.
+17. **Supabase conventions** live in `SUPABASE.md` (copied from the template). Column naming (suffixes `_txt`, `_num`, `_dttm`, etc.), RLS patterns, migration idempotency, auth model: consult that file before writing SQL. When a concept has no matching suffix, escalate — do not invent.
 
 ### Do NOT introduce
 

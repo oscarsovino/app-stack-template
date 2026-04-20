@@ -87,8 +87,9 @@ Platforms have genuinely different idioms: tap targets, bottom sheets, haptics o
 ### 4.1 Supabase schema
 
 - One migration set in `supabase/migrations/`.
-- `pnpm gen:types` regenerates `packages/shared-types/src/database.ts`.
+- `pnpm gen:types` regenerates `packages/shared-types/src/<schema>.ts`.
 - Both apps consume `Database` from `@app-stack/shared-types`.
+- **See [`SUPABASE.md`](./SUPABASE.md)** for authoritative conventions: schema organization (single vs split), column naming suffixes (strict), migration patterns, RLS patterns and gotchas, auth model, type generation workflow. ADR-0001 in `docs/adrs/` records the decision.
 
 ### 4.2 Domain validation
 

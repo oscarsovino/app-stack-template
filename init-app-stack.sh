@@ -77,6 +77,19 @@ for f in package.json pnpm-workspace.yaml turbo.json .nvmrc .npmrc .gitignore pr
   fi
 done
 
+# --- 1b. Supabase conventions + ADR ---------------------------------------
+# SUPABASE.md is refreshed on --force so projects pick up template updates.
+# docs/adrs/0001 is seeded once; ADRs are append-only per project.
+
+echo "-> Supabase conventions"
+if [[ -f "$SCRIPT_DIR/SUPABASE.md" ]]; then
+  copy_file "$SCRIPT_DIR/SUPABASE.md" "$TARGET_ABS/SUPABASE.md"
+fi
+if [[ -f "$SCRIPT_DIR/docs/adrs/0001-supabase-schema-pattern.md" ]]; then
+  copy_file "$SCRIPT_DIR/docs/adrs/0001-supabase-schema-pattern.md" \
+    "$TARGET_ABS/docs/adrs/0001-supabase-schema-pattern.md"
+fi
+
 # --- 2. Shared packages ----------------------------------------------------
 
 echo "-> packages/"
